@@ -20,27 +20,44 @@ export function ContactForm() {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    setErrorMsg('');
 
-    // Reset after a moment
-    setTimeout(() => {
-      // Compose mailto link with form data after the vaporize effect completes
-      const mailtoSubject = encodeURIComponent(formData.subject || 'Website Inquiry');
-      const mailtoBody = encodeURIComponent(
-        `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-      );
-      window.location.href = `mailto:sagnik@pyrostruct.in?subject=${mailtoSubject}&body=${mailtoBody}`;
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      setSubmitted(true);
       
-      setSubmitted(false);
-      setFormData({ name: '', email: '', subject: '', message: '' });
-    }, 2500); // Give time for vaporize to play before clearing
+      // Reset after a moment
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      }, 3000); // Give time for vaporize to play before clearing
+    } catch (err) {
+      console.error(err);
+      setErrorMsg('An error occurred. Please try again later.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -120,10 +137,16 @@ export function ContactForm() {
         />
       </div>
 
+      {errorMsg && (
+        <div style={{ color: '#ff4444', marginTop: '10px', fontSize: '0.9rem' }}>
+          {errorMsg}
+        </div>
+      )}
+
       <button
         type="submit"
         className={`btn btn-primary ${styles.submitBtn}`}
-        disabled={submitted}
+        disabled={submitted || isSubmitting}
         style={{ marginTop: '16px' }}
       >
         {submitted ? (
@@ -132,6 +155,10 @@ export function ContactForm() {
               <polyline points="20 6 9 17 4 12" />
             </svg>
             Transmission Sent
+          </>
+        ) : isSubmitting ? (
+          <>
+            Deploying...
           </>
         ) : (
           <>
