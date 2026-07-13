@@ -1,142 +1,232 @@
-.page {
-  --background: #fafafa;
-  --foreground: #fff;
-
-  --text-primary: #000;
-  --text-secondary: #666;
-
-  --button-primary-hover: #383838;
-  --button-secondary-hover: #f2f2f2;
-  --button-secondary-border: #ebebeb;
-
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  min-height: 100vh;
   display: flex;
-  flex: 1;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-geist-sans);
-  background-color: var(--background);
+  overflow: hidden;
+  background: #000;
 }
 
-.main {
+.heroContent {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  padding: 120px 24px 80px;
+}
+
+.heroBadge {
+  margin-bottom: 32px;
+}
+
+.heroTitle {
+  margin-bottom: 28px;
+  text-align: center;
   display: flex;
-  flex: 1;
-  width: 100%;
-  max-width: 800px;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: space-between;
-  background-color: var(--foreground);
-  padding: 120px 60px;
+  align-items: center;
 }
 
-.intro {
+.heroTitle h1 {
+  font-size: clamp(2.5rem, 7vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+.heroSubtitle {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: var(--fg-muted);
+  max-width: 560px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.heroCtas {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  text-align: left;
-  gap: 24px;
-}
-
-.intro h1 {
-  max-width: 320px;
-  font-size: 40px;
-  font-weight: 600;
-  line-height: 48px;
-  letter-spacing: -2.4px;
-  text-wrap: balance;
-  color: var(--text-primary);
-}
-
-.intro p {
-  max-width: 440px;
-  font-size: 18px;
-  line-height: 32px;
-  text-wrap: balance;
-  color: var(--text-secondary);
-}
-
-.intro a {
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.ctas {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  max-width: 440px;
   gap: 16px;
-  font-size: 14px;
-}
-
-.ctas a {
-  display: flex;
   justify-content: center;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+
+.heroFade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 200px;
+  background: linear-gradient(to top, var(--bg), transparent);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* ===== SECTION HEADERS ===== */
+.sectionHeader {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+/* ===== SERVICES ===== */
+.services {
+  background: var(--bg);
+}
+
+/* ===== ABOUT ===== */
+.about {
+  background: var(--bg-elevated);
+}
+
+.aboutGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 60px;
   align-items: center;
+}
+
+@media (min-width: 768px) {
+  .aboutGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+  }
+}
+
+.aboutContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.aboutContent h2 {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.statCard:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+}
+
+.statValue {
+  font-family: var(--font-heading);
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--fg);
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.statLabel {
+  font-size: 0.8rem;
+  color: var(--fg-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* ===== TESTIMONIALS ===== */
+.testimonials {
+  background: var(--bg);
+}
+
+.testimonialCard {
+  position: relative;
+  padding: 36px 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.testimonialCard:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-4px);
+}
+
+.quoteIcon {
+  margin-bottom: 16px;
+}
+
+.quoteText {
+  font-size: 0.95rem;
+  color: var(--fg-muted);
+  line-height: 1.8;
+  margin-bottom: 24px;
+  font-style: italic;
+}
+
+.quoteAuthor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.authorAvatar {
+  width: 40px;
   height: 40px;
-  padding: 0 16px;
-  border-radius: 128px;
-  border: 1px solid transparent;
-  transition: 0.2s;
-  cursor: pointer;
-  width: fit-content;
-  font-weight: 500;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--fg);
 }
 
-a.primary {
-  background: var(--text-primary);
-  color: var(--background);
-  gap: 8px;
+.authorName {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--fg);
 }
 
-a.secondary {
-  border-color: var(--button-secondary-border);
+.authorRole {
+  font-size: 0.8rem;
+  color: var(--fg-dim);
 }
 
-/* Enable hover only on non-touch devices */
-@media (hover: hover) and (pointer: fine) {
-  a.primary:hover {
-    background: var(--button-primary-hover);
-    border-color: transparent;
-  }
-
-  a.secondary:hover {
-    background: var(--button-secondary-hover);
-    border-color: transparent;
-  }
+/* ===== CTA BANNER ===== */
+.ctaSection {
+  padding-bottom: 80px;
 }
 
-@media (max-width: 600px) {
-  .main {
-    padding: 48px 24px;
-  }
-
-  .intro {
-    gap: 16px;
-  }
-
-  .intro h1 {
-    font-size: 32px;
-    line-height: 40px;
-    letter-spacing: -1.92px;
-  }
+.ctaBanner {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  padding: 80px 40px;
+  text-align: center;
 }
 
-@media (prefers-color-scheme: dark) {
-  .logo {
-    filter: invert();
-  }
+.ctaContent {
+  position: relative;
+  z-index: 10;
+}
 
-  .page {
-    --background: #000;
-    --foreground: #000;
-
-    --text-primary: #ededed;
-    --text-secondary: #999;
-
-    --button-primary-hover: #ccc;
-    --button-secondary-hover: #1a1a1a;
-    --button-secondary-border: #1a1a1a;
-  }
+.ctaContent h2 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
 }

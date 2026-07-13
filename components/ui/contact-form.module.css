@@ -1,0 +1,58 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 640px) {
+  .row {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 16px 32px;
+  margin-top: 8px;
+  font-size: 1rem;
+}
+
+.submitBtn:disabled {
+  opacity: 0.8;
+  cursor: default;
+  transform: none !important;
+}
+
+.selectWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.selectInput {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 40px;
+  cursor: pointer;
+  background-color: var(--bg-card);
+}
+
+.selectIcon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: var(--fg-dim);
+}
