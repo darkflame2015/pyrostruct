@@ -13,6 +13,11 @@ export function RazorpayButton() {
       script.setAttribute('data-payment_button_id', 'pl_TD3m3JeJjiXEnR');
       formRef.current.appendChild(script);
     }
+    
+    // Cleanup any lingering body overflow if the component unmounts while modal is open
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
   }, []);
 
   return <form ref={formRef} style={{ margin: 0, padding: 0, display: 'flex', justifyContent: 'center', width: '100%' }}></form>;

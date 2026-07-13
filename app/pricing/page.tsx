@@ -113,6 +113,19 @@ export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activeCurrencyIndex, setActiveCurrencyIndex] = useState(0);
 
+  // Clean up body overflow if user leaves the page or uses the back button while Razorpay is open
+  useEffect(() => {
+    const handlePopState = () => {
+      document.body.style.overflow = 'auto';
+    };
+    
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      document.body.style.overflow = 'auto';
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
   const activeCurrency = currencies[activeCurrencyIndex];
   
 
