@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { HoverVaporizeText } from './hover-vaporize-text';
+import { RazorpayButton } from './razorpay-button';
 import styles from './pricing-card.module.css';
 
 interface PricingFeature {
@@ -21,6 +22,7 @@ interface PricingCardProps {
   ctaText?: string;
   ctaHref?: string;
   onCtaClick?: () => void;
+  useRazorpayButton?: boolean;
   index?: number;
 }
 
@@ -34,6 +36,7 @@ export function PricingCard({
   ctaText = 'Commission Project',
   ctaHref = '/contact',
   onCtaClick,
+  useRazorpayButton = false,
   index = 0
 }: PricingCardProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -107,7 +110,11 @@ export function PricingCard({
         ))}
       </ul>
 
-      {onCtaClick ? (
+      {useRazorpayButton ? (
+        <div style={{ marginTop: 'auto', width: '100%', display: 'flex', justifyContent: 'center' }}>
+          <RazorpayButton />
+        </div>
+      ) : onCtaClick ? (
         <button
           onClick={onCtaClick}
           className={`${styles.cta} ${popular ? styles.ctaPrimary : ''}`}

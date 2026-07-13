@@ -113,59 +113,9 @@ export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activeCurrencyIndex, setActiveCurrencyIndex] = useState(0);
 
-  // Clean up body overflow if user leaves the page or uses the back button while Razorpay is open
-  useEffect(() => {
-    const handlePopState = () => {
-      document.body.style.overflow = 'auto';
-    };
-    
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      document.body.style.overflow = 'auto';
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, []);
-
   const activeCurrency = currencies[activeCurrencyIndex];
   
-  const handlePayment = async (tier: any, currentPrice: number) => {
-    const { loadRazorpay } = await import('@/lib/razorpay');
-    const res = await loadRazorpay();
-    if (!res) {
-      alert('Razorpay SDK failed to load. Are you online?');
-      return;
-    }
 
-    const amount = Math.floor(currentPrice * activeCurrency.rate * 100);
-
-    const options = {
-      key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'YOUR_KEY_ID',
-      amount: amount,
-      currency: activeCurrency.code,
-      name: 'PyroStruct',
-      description: `${tier.tier} Plan`,
-      image: '/logo.png',
-      handler: function (response: any) {
-        alert(`Payment successful! Payment ID: ${response.razorpay_payment_id}. We will contact you shortly.`);
-      },
-      prefill: {
-        name: '', 
-        email: '',
-        contact: ''
-      },
-      theme: {
-        color: '#0a0a0a'
-      },
-      modal: {
-        ondismiss: function() {
-          document.body.style.overflow = 'auto';
-        }
-      }
-    };
-
-    const paymentObject = new (window as any).Razorpay(options);
-    paymentObject.open();
-  };
 
   const formatPrice = (basePrice: number) => {
     const converted = basePrice * activeCurrency.rate;
@@ -241,7 +191,7 @@ export default function PricingPage() {
                   popular={tier.popular}
                   index={i}
                   ctaText={isEnterprise ? 'Contact Us' : 'Deploy Project'}
-                  onCtaClick={!isEnterprise ? () => handlePayment(tier, tier.basePrice) : undefined}
+                  useRazorpayButton={!isEnterprise}
                 />
               </div>
               )
