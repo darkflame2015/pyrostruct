@@ -8,7 +8,8 @@
   position: relative;
   overflow: hidden;
   will-change: transform;
-  min-height: 360px; /* Decreased height */
+  min-height: 360px;
+  /* Decreased height */
   display: flex;
   flex-direction: column;
 }
@@ -19,7 +20,7 @@
   left: 0;
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle at center, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 70%);
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0) 70%);
   border-radius: 50%;
   pointer-events: none;
   opacity: 0;

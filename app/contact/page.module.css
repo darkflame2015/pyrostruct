@@ -1,6 +1,12 @@
 /* ===== HERO ===== */
 .hero {
-  padding: 100px 0 40px;
+  padding: 60px 0 20px;
+}
+
+@media (min-width: 768px) {
+  .hero {
+    padding: 100px 0 40px;
+  }
 }
 
 .hero h1 {

@@ -334,8 +334,14 @@ a {
 
 /* ---- Section ---- */
 .section {
-  padding: 120px 0;
+  padding: 60px 0;
   position: relative;
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding: 120px 0;
+  }
 }
 
 .section-label {

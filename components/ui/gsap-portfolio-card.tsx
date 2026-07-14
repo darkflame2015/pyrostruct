@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
+import Image from 'next/image';
 import Link from 'next/link';
 import styles from './gsap-portfolio-card.module.css';
 
@@ -9,16 +10,14 @@ interface PortfolioCardProps {
   title: string;
   description: string;
   link: string;
+  image?: string;
   index: number;
 }
 
-export function GsapPortfolioCard({ title, description, link, index }: PortfolioCardProps) {
+export function GsapPortfolioCard({ title, description, link, image, index }: PortfolioCardProps) {
   const cardRef = useRef<HTMLAnchorElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const descRef = useRef<HTMLParagraphElement>(null);
-
-  const mouseX = React.useRef(0);
-  const mouseY = React.useRef(0);
   const blobRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -82,6 +81,23 @@ export function GsapPortfolioCard({ title, description, link, index }: Portfolio
       ref={cardRef}
     >
       <div className="noiseOverlay" />
+      
+      {image && (
+        <>
+          <div className={styles.imagePreview}>
+            <Image 
+              src={image} 
+              alt={`${title} Preview`} 
+              fill 
+              style={{ objectFit: 'cover', objectPosition: 'top center' }} 
+              sizes="(max-width: 768px) 100vw, 50vw"
+              quality={80}
+            />
+          </div>
+          <div className={styles.imageGradient} />
+        </>
+      )}
+
       <div 
         ref={blobRef} 
         className={styles.spotlightBlob}

@@ -60,6 +60,30 @@
   line-height: 1.6;
 }
 
+.saleWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.originalPrice {
+  font-size: 1.1rem;
+  color: var(--fg-muted);
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+.discountBadge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  background: #e63946;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.05em;
+}
+
 .priceWrap {
   display: flex;
   align-items: baseline;

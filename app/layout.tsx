@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { ScrollToTop } from "@/components/ui/scroll-to-top";
 import "./globals.css";
 
 const inter = Inter({
@@ -49,7 +50,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
+      <head>
+      </head>
       <body>
+        <ScrollToTop />
         <Navbar />
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           {children}

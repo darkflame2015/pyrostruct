@@ -7,7 +7,7 @@ import { VapourText } from '@/components/ui/vapour-text';
 import { PricingCard } from '@/components/ui/pricing-card';
 import styles from './page.module.css';
 
-const currencies = [
+const initialCurrencies = [
   { code: 'INR', symbol: '₹', rate: 1, label: 'INR' },
   { code: 'USD', symbol: '$', rate: 1 / 83.5, label: 'US Dollar' },
   { code: 'EUR', symbol: '€', rate: 1 / 90.5, label: 'Euro' },
@@ -17,7 +17,8 @@ const currencies = [
 const pricingTiers = [
   {
     tier: 'Starter',
-    basePrice: 12000,
+    originalPrice: 18000,
+    basePrice: 11999,
     period: '/project',
     description: 'Perfect for small businesses and personal portfolios needing a clean, professional online presence.',
     features: [
@@ -33,7 +34,8 @@ const pricingTiers = [
   },
   {
     tier: 'Professional',
-    basePrice: 19000,
+    originalPrice: 23000,
+    basePrice: 18999,
     period: '/project',
     description: 'For growing brands that need a powerful, multi-page digital platform with better features.',
     features: [
@@ -49,7 +51,8 @@ const pricingTiers = [
   },
   {
     tier: 'Premium',
-    basePrice: 25000,
+    originalPrice: 32000,
+    basePrice: 25999,
     period: '/project',
     description: 'High-quality site with premium animations, chatbot, and basic e-commerce capabilities.',
     popular: true,
@@ -66,7 +69,8 @@ const pricingTiers = [
   },
   {
     tier: 'Enterprise',
-    basePrice: 45000,
+    originalPrice: 60000,
+    basePrice: 44999,
     period: '+',
     description: 'Enterprise-grade architecture with custom add-ons for large businesses. Contact for precise pricing.',
     features: [
@@ -112,6 +116,29 @@ const faqs = [
 export default function PricingPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [activeCurrencyIndex, setActiveCurrencyIndex] = useState(0);
+  const [currencies, setCurrencies] = useState(initialCurrencies);
+
+  useEffect(() => {
+    async function fetchRates() {
+      try {
+        const res = await fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/inr.json');
+        if (!res.ok) return;
+        const data = await res.json();
+        const rates = data.inr;
+        if (rates) {
+          setCurrencies([
+            { code: 'INR', symbol: '₹', rate: 1, label: 'INR' },
+            { code: 'USD', symbol: '$', rate: rates.usd, label: 'US Dollar' },
+            { code: 'EUR', symbol: '€', rate: rates.eur, label: 'Euro' },
+            { code: 'CAD', symbol: 'CA$', rate: rates.cad, label: 'Canadian Dollar' },
+          ]);
+        }
+      } catch (err) {
+        console.error('Failed to fetch live rates', err);
+      }
+    }
+    fetchRates();
+  }, []);
 
   // Clean up body overflow if user leaves the page or uses the back button while Razorpay is open
   useEffect(() => {
@@ -128,7 +155,94 @@ export default function PricingPage() {
 
   const activeCurrency = currencies[activeCurrencyIndex];
   
+  const handlePayment = async (tier: any, currentPrice: number) => {
+    const { loadRazorpay } = await import('@/lib/razorpay');
+    const res = await loadRazorpay();
+    if (!res) {
+      alert('Razorpay SDK failed to load. Are you online?');
+      return;
+    }
 
+    const amount = Math.floor(currentPrice * activeCurrency.rate * 100);
+
+    try {
+      // 1. Create order on the backend securely
+      const orderResponse = await fetch('/api/razorpay/create-order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: amount,
+          currency: activeCurrency.code,
+        })
+      });
+
+      const contentType = orderResponse.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('Server configuration error: Payment gateway might not be set up correctly.');
+      }
+
+      const orderData = await orderResponse.json();
+      
+      if (!orderResponse.ok) {
+        throw new Error(orderData.error || 'Failed to create order');
+      }
+
+      // 2. Initialize Razorpay with the Order ID
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || 'YOUR_KEY_ID',
+        amount: orderData.order.amount,
+        currency: orderData.order.currency,
+        name: 'PyroStruct',
+        description: `${tier.tier} Plan`,
+        image: '/logo.png',
+        order_id: orderData.order.id, // Required for live transactions
+        handler: async function (response: any) {
+          // 3. Verify payment signature on the backend
+          try {
+            const verifyRes = await fetch('/api/razorpay/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            });
+
+            const verifyData = await verifyRes.json();
+
+            if (verifyData.isAuthentic) {
+              alert(`Payment successful! Payment ID: ${response.razorpay_payment_id}. We will contact you shortly.`);
+            } else {
+              alert('Payment verification failed. If money was deducted, please contact support.');
+            }
+          } catch (err) {
+            console.error('Verification error', err);
+            alert('Payment processed, but automatic verification failed. We will manually verify and contact you.');
+          }
+        },
+        prefill: {
+          name: '', 
+          email: '',
+          contact: ''
+        },
+        theme: {
+          color: '#0a0a0a'
+        },
+        modal: {
+          ondismiss: function() {
+            document.body.style.overflow = 'auto';
+          }
+        }
+      };
+
+      const paymentObject = new (window as any).Razorpay(options);
+      paymentObject.open();
+    } catch (err: any) {
+      console.error('Checkout error:', err);
+      alert(err.message || 'Something went wrong initiating the payment.');
+    }
+  };
 
   const formatPrice = (basePrice: number) => {
     const converted = basePrice * activeCurrency.rate;
@@ -141,34 +255,20 @@ export default function PricingPage() {
       {/* Hero */}
       <section className={styles.hero}>
         <div className="container" style={{ textAlign: 'center' }}>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div style={{ textAlign: 'center' }}>
             <span className="section-label">Pricing</span>
-          </motion.div>
+          </div>
           <VapourText
             text="Exclusive Plans for Elite Brands"
             as="h1"
             delay={0.2}
             staggerDelay={0.02}
           />
-          <motion.p
-            className={styles.heroSubtitle}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
+          <p className={styles.heroSubtitle}>
             Invest in digital infrastructure that commands absolute market authority. From elegant foundations to custom enterprise architectures, our solutions are engineered for unparalleled performance.
-          </motion.p>
+          </p>
           
-          <motion.div 
-            className={styles.currencyToggle}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 1 }}
-          >
+          <div className={styles.currencyToggle}>
             {currencies.map((currency, idx) => (
               <button
                 key={currency.code}
@@ -178,7 +278,7 @@ export default function PricingPage() {
                 {currency.code}
               </button>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -188,6 +288,7 @@ export default function PricingPage() {
           <div className="grid-4">
             {pricingTiers.map((tier, i) => {
               const isEnterprise = tier.tier === 'Enterprise';
+              const discount = Math.round(((tier.originalPrice - tier.basePrice) / tier.originalPrice) * 100);
               return (
               <div 
                 key={tier.tier}
@@ -198,13 +299,15 @@ export default function PricingPage() {
                 <PricingCard 
                   tier={tier.tier}
                   price={formatPrice(tier.basePrice)}
+                  originalPrice={formatPrice(tier.originalPrice)}
+                  discountPercentage={`${discount}% OFF`}
                   period={tier.period}
                   description={tier.description}
                   features={tier.features}
                   popular={tier.popular}
                   index={i}
-                  ctaText={isEnterprise ? 'Contact Us' : 'Deploy Project'}
-                  useRazorpayButton={!isEnterprise}
+                  ctaText={isEnterprise ? 'Contact Us' : 'Pay'}
+                  onCtaClick={!isEnterprise ? () => handlePayment(tier, tier.basePrice) : undefined}
                 />
               </div>
               )

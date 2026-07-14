@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { HoverVaporizeText } from './hover-vaporize-text';
-import { RazorpayButton } from './razorpay-button';
 import styles from './pricing-card.module.css';
 
 interface PricingFeature {
@@ -15,6 +14,8 @@ interface PricingFeature {
 interface PricingCardProps {
   tier: string;
   price: string;
+  originalPrice?: string;
+  discountPercentage?: string;
   period?: string;
   description: string;
   features: PricingFeature[];
@@ -22,21 +23,21 @@ interface PricingCardProps {
   ctaText?: string;
   ctaHref?: string;
   onCtaClick?: () => void;
-  useRazorpayButton?: boolean;
   index?: number;
 }
 
 export function PricingCard({
   tier,
   price,
+  originalPrice,
+  discountPercentage,
   period = '/project',
   description,
   features,
   popular = false,
-  ctaText = 'Commission Project',
+  ctaText = 'Pay',
   ctaHref = '/contact',
   onCtaClick,
-  useRazorpayButton = false,
   index = 0
 }: PricingCardProps) {
   const [isHovered, setIsHovered] = useState(false);
@@ -76,6 +77,13 @@ export function PricingCard({
         <p className={styles.desc}>{description}</p>
       </div>
 
+      {originalPrice && discountPercentage && (
+        <div className={styles.saleWrap}>
+          <span className={styles.originalPrice}>{originalPrice}</span>
+          <span className={styles.discountBadge}>{discountPercentage}</span>
+        </div>
+      )}
+
       <div className={styles.priceWrap}>
         <span className={styles.price}>{price}</span>
         <span className={styles.period}>{period}</span>
@@ -110,11 +118,7 @@ export function PricingCard({
         ))}
       </ul>
 
-      {useRazorpayButton ? (
-        <div style={{ marginTop: 'auto', width: '100%', display: 'flex', justifyContent: 'center' }}>
-          <RazorpayButton />
-        </div>
-      ) : onCtaClick ? (
+      {onCtaClick ? (
         <button
           onClick={onCtaClick}
           className={`${styles.cta} ${popular ? styles.ctaPrimary : ''}`}

@@ -6,9 +6,17 @@ import { motion } from 'framer-motion';
 import { ShadowOverlay } from '@/components/ui/shadow-overlay';
 import { VapourText } from '@/components/ui/vapour-text';
 
-import { ZoomParallax } from '@/components/ui/zoom-parallax';
+import dynamic from 'next/dynamic';
 import { ServiceCard } from '@/components/ui/service-card';
-import { GlobeAnalytics } from '@/components/ui/globe-analytics';
+
+// Keep WebGL Globe client-side only, but give it an exact aspect-ratio placeholder to eliminate CLS
+const GlobeDynamic = dynamic(
+  () => import('@/components/ui/globe-analytics').then((mod) => mod.GlobeAnalytics),
+  { ssr: false, loading: () => <div style={{ width: '100%', aspectRatio: '1/1', borderRadius: '50%', background: 'rgba(255,255,255,0.02)' }} /> }
+);
+
+import { ZoomParallax } from '@/components/ui/zoom-parallax';
+import { usePerformanceMode } from '@/hooks/use-performance-mode';
 
 import styles from './page.module.css';
 
@@ -57,7 +65,7 @@ const stats = [
 const testimonials = [
   {
     quote: "Working with Sagnik was an absolute game changer. He delivered a stunning website ahead of schedule with zero friction.",
-    author: "Sayantan Sen CLASSIFIED",
+    author: "Sayantan Sen",
     role: "Project Manager"
   },
   {
@@ -66,13 +74,15 @@ const testimonials = [
     role: "Technical Lead"
   },
   {
-    quote: "They delivered a highly sophisticated enterprise SaaS architecture with flawless precision. Truly a world-class studio.",
-    author: "James Park",
+    quote: "Sagnik delivered a highly sophisticated enterprise SaaS architecture with flawless precision. Happy with his provided service.",
+    author: "David Park",
     role: "CEO, DataForge"
   },
 ];
 
 export default function HomePage() {
+  const isLowEndDevice = usePerformanceMode();
+
   return (
     <>
       {/* ========== HERO ========== */}
@@ -102,22 +112,12 @@ export default function HomePage() {
             />
           </div>
 
-          <motion.p
-            className={styles.heroSubtitle}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          >
+          <p className={styles.heroSubtitle}>
             Bespoke architecture for exclusive brands. We craft high-performance
             platforms designed to dominate markets and command absolute attention.
-          </motion.p>
+          </p>
 
-          <motion.div
-            className={styles.heroCtas}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.4, ease: [0.16, 1, 0.3, 1] }}
-          >
+          <div className={styles.heroCtas}>
             <Link href="/contact" className="btn btn-primary">
               Commission a Project
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -128,7 +128,7 @@ export default function HomePage() {
             <Link href="/services" className="btn btn-outline">
               Explore Our Work
             </Link>
-          </motion.div>
+          </div>
         </div>
 
         {/* Gradient fade at bottom */}
@@ -213,7 +213,15 @@ export default function HomePage() {
               </div>
 
               <div style={{ marginTop: '40px', maxWidth: '400px', width: '100%', alignSelf: 'center' }}>
-                <GlobeAnalytics />
+                {isLowEndDevice ? (
+                  <div style={{ width: '100%', aspectRatio: '1/1', borderRadius: '50%', background: 'rgba(255,255,255,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ color: 'var(--fg-dim)', fontSize: '0.85rem', textAlign: 'center', padding: '20px' }}>
+                      Interactive features disabled<br/>to conserve device resources.
+                    </span>
+                  </div>
+                ) : (
+                  <GlobeDynamic />
+                )}
               </div>
             </motion.div>
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { useScroll, useTransform, motion } from 'framer-motion';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import styles from './zoom-parallax.module.css';
 
 interface ZoomParallaxProps {
@@ -9,6 +9,17 @@ interface ZoomParallaxProps {
 }
 
 export function ZoomParallax({ items }: ZoomParallaxProps) {
+  const [isMobile, setIsMobile] = useState(true);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   const container = useRef(null);
   const { scrollYProgress } = useScroll({
     target: container,
@@ -19,11 +30,14 @@ export function ZoomParallax({ items }: ZoomParallaxProps) {
     <div ref={container} className={styles.container}>
       <div className={styles.grid}>
         {items.map((item, index) => {
-          // Subtle staggered Y translation
+          // Subtle staggered Y translation only on desktop!
+          const yOffset = isMobile ? 0 : (index % 2 === 0 ? 60 : -60);
+          const yOffsetEnd = isMobile ? 0 : (index % 2 === 0 ? 120 : -120);
+
           const y = useTransform(
             scrollYProgress, 
             [0, 1], 
-            [index % 2 === 0 ? 60 : 120, index % 2 === 0 ? -60 : -120]
+            [yOffset, yOffsetEnd]
           );
           
           // Subtle zoom in as it scrolls into view

@@ -6,13 +6,14 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 interface TextRevealProps {
   children: string;
   className?: string;
+  offset?: any; // e.g. ['start 0.9', 'end 0.2']
 }
 
-export function TextReveal({ children, className = '' }: TextRevealProps) {
+export function TextReveal({ children, className = '', offset = ['start 0.9', 'start 0.25'] }: TextRevealProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start 0.9', 'start 0.25'],
+    offset: offset,
   });
 
   const words = children.split(' ');
@@ -65,6 +66,7 @@ function Word({ children, range, progress }: WordProps) {
         marginRight: '0.3em',
         display: 'inline-block',
         transition: 'color 0.1s',
+        willChange: 'opacity',
       }}
     >
       {children}

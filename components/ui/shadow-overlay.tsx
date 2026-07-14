@@ -2,6 +2,7 @@
 
 import React, { useRef, useId, useEffect, CSSProperties } from 'react';
 import { animate, useMotionValue, AnimationPlaybackControls } from 'framer-motion';
+import { usePerformanceMode } from '@/hooks/use-performance-mode';
 
 interface AnimationConfig {
     preview?: boolean;
@@ -54,41 +55,13 @@ export function ShadowOverlay({
     children
 }: ShadowOverlayProps) {
     const id = useInstanceId();
-    const animationEnabled = animation && animation.scale > 0;
-    const feColorMatrixRef = useRef<SVGFEColorMatrixElement>(null);
-    const hueRotateMotionValue = useMotionValue(180);
-    const hueRotateAnimation = useRef<AnimationPlaybackControls | null>(null);
+    const isLowEnd = usePerformanceMode();
+    const animationEnabled = animation && animation.scale > 0 && !isLowEnd;
 
     const displacementScale = animation ? mapRange(animation.scale, 1, 100, 20, 100) : 0;
     const animationDuration = animation ? mapRange(animation.speed, 1, 100, 1000, 50) : 1;
-
-    useEffect(() => {
-        if (feColorMatrixRef.current && animationEnabled) {
-            if (hueRotateAnimation.current) {
-                hueRotateAnimation.current.stop();
-            }
-            hueRotateMotionValue.set(0);
-            hueRotateAnimation.current = animate(hueRotateMotionValue, 360, {
-                duration: animationDuration / 25,
-                repeat: Infinity,
-                repeatType: "loop",
-                repeatDelay: 0,
-                ease: "linear",
-                delay: 0,
-                onUpdate: (value: number) => {
-                    if (feColorMatrixRef.current) {
-                        feColorMatrixRef.current.setAttribute("values", String(value));
-                    }
-                }
-            });
-
-            return () => {
-                if (hueRotateAnimation.current) {
-                    hueRotateAnimation.current.stop();
-                }
-            };
-        }
-    }, [animationEnabled, animationDuration, hueRotateMotionValue]);
+    // Calculate the duration in seconds for the SVG animate tag
+    const smilDuration = `${animationDuration / 25}s`;
 
     return (
         <div
@@ -110,7 +83,7 @@ export function ShadowOverlay({
                 }}
             >
                 {animationEnabled && (
-                    <svg style={{ position: "absolute" }}>
+                    <svg style={{ position: "absolute", width: 0, height: 0 }}>
                         <defs>
                             <filter id={id}>
                                 <feTurbulence
@@ -121,11 +94,18 @@ export function ShadowOverlay({
                                     type="turbulence"
                                 />
                                 <feColorMatrix
-                                    ref={feColorMatrixRef}
                                     in="undulation"
                                     type="hueRotate"
-                                    values="180"
-                                />
+                                    values="0"
+                                >
+                                    <animate
+                                        attributeName="values"
+                                        from="0"
+                                        to="360"
+                                        dur={smilDuration}
+                                        repeatCount="indefinite"
+                                    />
+                                </feColorMatrix>
                                 <feColorMatrix
                                     in="dist"
                                     result="circulation"
@@ -151,10 +131,8 @@ export function ShadowOverlay({
                 <div
                     style={{
                         backgroundColor: color,
-                        maskImage: `url('https://framerusercontent.com/images/ceBGguIpUU8luwByxuQz79t7To.png')`,
-                        maskSize: sizing === "stretch" ? "100% 100%" : "cover",
-                        maskRepeat: "no-repeat",
-                        maskPosition: "center",
+                        maskImage: `radial-gradient(ellipse at center, black 0%, transparent 80%)`,
+                        WebkitMaskImage: `radial-gradient(ellipse at center, black 0%, transparent 80%)`,
                         width: "100%",
                         height: "100%"
                     }}
@@ -181,11 +159,12 @@ export function ShadowOverlay({
                     style={{
                         position: "absolute",
                         inset: 0,
-                        backgroundImage: `url("https://framerusercontent.com/images/g0QcWrxr87K0ufOxIUFBakwYA8.png")`,
-                        backgroundSize: noise.scale * 200,
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+                        backgroundSize: `${noise.scale * 200}px`,
                         backgroundRepeat: "repeat",
-                        opacity: noise.opacity / 2,
-                        pointerEvents: "none"
+                        opacity: noise.opacity,
+                        pointerEvents: "none",
+                        mixBlendMode: "overlay"
                     }}
                 />
             )}

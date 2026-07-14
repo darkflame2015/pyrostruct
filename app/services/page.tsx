@@ -4,7 +4,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { VapourText } from '@/components/ui/vapour-text';
 import { TextReveal } from '@/components/ui/text-reveal';
+import dynamic from 'next/dynamic';
 import { GsapPortfolioCard } from '@/components/ui/gsap-portfolio-card';
+
 import { ZoomParallax } from '@/components/ui/zoom-parallax';
 import { ShadowOverlay } from '@/components/ui/shadow-overlay';
 import Link from 'next/link';
@@ -44,7 +46,7 @@ export default function ServicesPage() {
           noise={{ opacity: 0.3, scale: 1 }}
           style={{ position: 'absolute', inset: 0 }}
         />
-        
+
         <div className={`container ${styles.heroContent}`}>
           <div className={styles.heroTitle}>
             <VapourText
@@ -55,18 +57,13 @@ export default function ServicesPage() {
             />
           </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 1 }}
-            className={styles.revealWrapper}
-          >
-            <TextReveal className={styles.revealText}>
+          <div className={styles.revealWrapper}>
+            <TextReveal className={styles.revealText} offset={['start 0.9', 'end 0.4']}>
               We architect bespoke digital experiences tailored for exclusive brands. Our portfolio represents the pinnacle of high-performance e-commerce and complex enterprise-grade SaaS infrastructure. By fusing immaculate design with uncompromising engineering, we deliver absolute market dominance. Discover our exemplary work below.
             </TextReveal>
-          </motion.div>
+          </div>
         </div>
-        
+
         <div className={styles.heroFade} />
       </section>
 
@@ -87,13 +84,14 @@ export default function ServicesPage() {
             </p>
           </motion.div>
 
-          <ZoomParallax 
+          <ZoomParallax
             items={portfolioProjects.map((project, i) => (
               <div key={project.title} style={{ width: '100%', height: '100%' }}>
-                <GsapPortfolioCard 
+                <GsapPortfolioCard
                   title={project.title}
                   description={project.description}
                   link={project.link}
+                  image={(project as any).image}
                   index={i}
                 />
               </div>

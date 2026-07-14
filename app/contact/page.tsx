@@ -58,28 +58,19 @@ export default function ContactPage() {
       {/* Hero */}
       <section className={styles.hero}>
         <div className="container" style={{ textAlign: 'center' }}>
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
+          <div style={{ textAlign: 'center' }}>
             <span className="section-label">Contact</span>
-          </motion.div>
+          </div>
           <VapourText
             text="Initiate an Alliance"
             as="h1"
             delay={0.2}
             staggerDelay={0.025}
           />
-          <motion.p
-            className={styles.heroSubtitle}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          >
+          <p className={styles.heroSubtitle}>
             Ready to engineer digital supremacy? Drop us a line.
             Our elite team is prepared to elevate your brand to the next echelon.
-          </motion.p>
+          </p>
         </div>
       </section>
 
