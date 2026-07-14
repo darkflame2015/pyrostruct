@@ -31,8 +31,8 @@ export function ZoomParallax({ items }: ZoomParallaxProps) {
       <div className={styles.grid}>
         {items.map((item, index) => {
           // Subtle staggered Y translation only on desktop!
-          const yOffset = isMobile ? 0 : (index % 2 === 0 ? 60 : -60);
-          const yOffsetEnd = isMobile ? 0 : (index % 2 === 0 ? 120 : -120);
+          const yOffset = isMobile ? 0 : (index % 2 === 0 ? 60 : 120);
+          const yOffsetEnd = isMobile ? 0 : (index % 2 === 0 ? -60 : -120);
 
           const y = useTransform(
             scrollYProgress, 

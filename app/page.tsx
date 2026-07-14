@@ -1,22 +1,12 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { ShadowOverlay } from '@/components/ui/shadow-overlay';
 import { VapourText } from '@/components/ui/vapour-text';
 
-import dynamic from 'next/dynamic';
 import { ServiceCard } from '@/components/ui/service-card';
-
-// Keep WebGL Globe client-side only, but give it an exact aspect-ratio placeholder to eliminate CLS
-const GlobeDynamic = dynamic(
-  () => import('@/components/ui/globe-analytics').then((mod) => mod.GlobeAnalytics),
-  { ssr: false, loading: () => <div style={{ width: '100%', aspectRatio: '1/1', borderRadius: '50%', background: 'rgba(255,255,255,0.02)' }} /> }
-);
-
+import { GlobeContainer } from '@/components/ui/globe-container';
+import { ScrollAnimation } from '@/components/ui/scroll-animation';
 import { ZoomParallax } from '@/components/ui/zoom-parallax';
-import { usePerformanceMode } from '@/hooks/use-performance-mode';
 
 import styles from './page.module.css';
 
@@ -81,8 +71,6 @@ const testimonials = [
 ];
 
 export default function HomePage() {
-  const isLowEndDevice = usePerformanceMode();
-
   return (
     <>
       {/* ========== HERO ========== */}
@@ -138,20 +126,14 @@ export default function HomePage() {
       {/* ========== SERVICES ========== */}
       <section id="services" className={`section ${styles.services}`}>
         <div className="container">
-          <motion.div
-            className={styles.sectionHeader}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <ScrollAnimation className={styles.sectionHeader}>
             <span className="section-label">Our Capabilities</span>
             <VapourText text="Architected for Dominance" as="h2" className="section-title" />
             <p className="section-subtitle">
               From visionary concepts to flawless deployment, we deliver exclusive digital infrastructure
               that propels elite brands forward.
             </p>
-          </motion.div>
+          </ScrollAnimation>
 
           <ZoomParallax
             items={[
@@ -196,12 +178,10 @@ export default function HomePage() {
       <section className={`section ${styles.about}`}>
         <div className="container">
           <div className={styles.aboutGrid}>
-            <motion.div
+            <ScrollAnimation
               className={styles.aboutContent}
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
             >
               <span className="section-label">The PyroStruct Standard</span>
               <VapourText text="Precision Engineering Meets Premium Design" as="h2" className="section-title" />
@@ -213,31 +193,20 @@ export default function HomePage() {
               </div>
 
               <div style={{ marginTop: '40px', maxWidth: '400px', width: '100%', alignSelf: 'center' }}>
-                {isLowEndDevice ? (
-                  <div style={{ width: '100%', aspectRatio: '1/1', borderRadius: '50%', background: 'rgba(255,255,255,0.02)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid rgba(255,255,255,0.05)' }}>
-                    <span style={{ color: 'var(--fg-dim)', fontSize: '0.85rem', textAlign: 'center', padding: '20px' }}>
-                      Interactive features disabled<br/>to conserve device resources.
-                    </span>
-                  </div>
-                ) : (
-                  <GlobeDynamic />
-                )}
+                <GlobeContainer />
               </div>
-            </motion.div>
+            </ScrollAnimation>
 
             <div className={styles.statsGrid}>
               {stats.map((stat, i) => (
-                <motion.div
+                <ScrollAnimation
                   key={stat.label}
                   className={styles.statCard}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                  delay={i * 0.1}
                 >
                   <span className={styles.statValue}>{stat.value}</span>
                   <span className={styles.statLabel}>{stat.label}</span>
-                </motion.div>
+                </ScrollAnimation>
               ))}
             </div>
           </div>
@@ -247,26 +216,18 @@ export default function HomePage() {
       {/* ========== TESTIMONIALS ========== */}
       <section className={`section ${styles.testimonials}`}>
         <div className="container">
-          <motion.div
-            className={styles.sectionHeader}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <ScrollAnimation className={styles.sectionHeader}>
             <span className="section-label">Testimonials</span>
             <VapourText text="Trusted by Ambitious Teams" as="h2" className="section-title" />
-          </motion.div>
+          </ScrollAnimation>
 
           <div className="grid-3" style={{ marginTop: '60px' }}>
             {testimonials.map((t, i) => (
-              <motion.div
+              <ScrollAnimation
                 key={t.author}
                 className={styles.testimonialCard}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
+                y={30}
+                delay={i * 0.12}
               >
                 <svg className={styles.quoteIcon} width="32" height="32" viewBox="0 0 24 24" fill="currentColor" opacity="0.15">
                   <path d="M11 7.5V16.5H5.5V12H3V7.5H11ZM21 7.5V16.5H15.5V12H13V7.5H21Z" />
@@ -281,7 +242,7 @@ export default function HomePage() {
                     <p className={styles.authorRole}>{t.role}</p>
                   </div>
                 </div>
-              </motion.div>
+              </ScrollAnimation>
             ))}
           </div>
         </div>
@@ -290,12 +251,10 @@ export default function HomePage() {
       {/* ========== CTA BANNER ========== */}
       <section className={`section ${styles.ctaSection}`}>
         <div className="container">
-          <motion.div
+          <ScrollAnimation
             className={styles.ctaBanner}
             initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
             <ShadowOverlay
               color="rgba(50, 50, 50, 0.4)"
@@ -322,7 +281,7 @@ export default function HomePage() {
                 </Link>
               </div>
             </div>
-          </motion.div>
+          </ScrollAnimation>
         </div>
       </section>
     </>

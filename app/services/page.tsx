@@ -1,11 +1,8 @@
-'use client';
-
 import React from 'react';
-import { motion } from 'framer-motion';
 import { VapourText } from '@/components/ui/vapour-text';
 import { TextReveal } from '@/components/ui/text-reveal';
-import dynamic from 'next/dynamic';
 import { GsapPortfolioCard } from '@/components/ui/gsap-portfolio-card';
+import { ScrollAnimation } from '@/components/ui/scroll-animation';
 
 import { ZoomParallax } from '@/components/ui/zoom-parallax';
 import { ShadowOverlay } from '@/components/ui/shadow-overlay';
@@ -70,19 +67,13 @@ export default function ServicesPage() {
       {/* Portfolio Grid */}
       <section className={`section ${styles.portfolioSection}`}>
         <div className="container">
-          <motion.div
-            className={styles.sectionHeader}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
+          <ScrollAnimation className={styles.sectionHeader}>
             <span className="section-label">Featured Work</span>
             <VapourText text="Exemplary Projects" as="h2" className="section-title" />
             <p className="section-subtitle">
               A curated selection of our most ambitious digital products. Hover over the cards to experience our custom interactive engineering.
             </p>
-          </motion.div>
+          </ScrollAnimation>
 
           <ZoomParallax
             items={portfolioProjects.map((project, i) => (
